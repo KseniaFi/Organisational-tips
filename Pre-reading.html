@@ -1,1 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-reading Task: Activating Knowledge & Prediction</title>
+    <!-- Подключаем библиотеки через CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-image: url('img/IMG_20250913_160559_655.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-shadow: 2px 2px 4px #5D4037, -1px -1px 0 #5D4037, 1px -1px 0 #5D4037, -1px 1px 0 #5D4037;
+            font-weight: bold;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(44, 62, 80, 0.8);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: white;
+            text-shadow: 2px 2px 4px #5D4037, -1px -1px 0 #5D4037, 1px -1px 0 #5D4037, -1px 1px 0 #5D4037;
+        }
+        .question {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-left: 4px solid #3498db;
+            background: rgba(248, 249, 250, 0.2);
+            border-radius: 4px;
+            position: relative;
+            page-break-inside: avoid;
+        }
+        .question img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: block;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        .question-number {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: white;
+            text-shadow: 2px 2px 4px #5D4037, -1px -1px 0 #5D4037, 1px -1px 0 #5D4037, -1px 1px 0 #5D4037;
+        }
+        .download-btn {
+            display: block;
+            width: 200px;
+            margin: 30px auto;
+            padding: 12px;
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .download-btn:hover {
+            background: #1a252f;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="content">
+        <h1>Pre-reading Task: Activating Knowledge & Prediction</h1>
+        
+        <div class="question">
+            <div class="question-number">1) Do you ever have trouble finding things at home or at work? Give an example.</div>
+            <img src="img/IMG_20250913_153237_997.jpg">
+        </div>
+        
+        <div class="question">
+            <div class="question-number">2) What are some methods you or your family use to keep things organized? Are they effective?</div>
+            <img src="img/IMG_20250913_153525_799.jpg">
+        </div>
+        
+        <div class="question">
+            <div class="question-number">3) Why do you think it can be difficult to stay organized?</div>
+            <img src="img/IMG_20250913_153237_074.jpg">
+        </div>
+        
+        <div class="question">
+            <div class="question-number">4) What advice would you give someone who wants to keep their space tidier?</div>
+            <img src="img/IMG_20250913_153524_416.jpg">
+        </div>
+        
+        <div class="question">
+            <div class="question-number">5) Based on the article’s title, what kinds of “life-changing tips” do you think will be suggested?</div>
+            <img src="img/IMG_20250913_153252_190.jpg">
+        </div>
+    </div>
+    
+    <button class="download-btn" onclick="generatePDF()">Download as PDF</button>
 
+    <script>
+        function generatePDF() {
+            // Используем html2canvas для захвата содержимого контейнера
+            html2canvas(document.getElementById('content'), {
+                scale: 2, // Повышаем качество изображения
+                useCORS: true, // Разрешаем перекрестные источники для изображений
+                backgroundColor: null // Прозрачный фон
+            }).then(canvas => {
+                // Создаем новый объект jsPDF
+                const pdf = new window.jspdf.jsPDF({
+                    orientation: 'portrait',
+                    unit: 'px',
+                    format: [canvas.width, canvas.height] // Устанавливаем размер PDF под размер canvas
+                });
+
+                // Конвертируем canvas в data URL
+                const imgData = canvas.toDataURL('image/png', 1.0);
+
+                // Добавляем изображение в PDF
+                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+
+                // Сохраняем PDF
+                pdf.save('Pre-reading_Task.pdf');
+            });
+        }
+    </script>
+</body>
+</html>
