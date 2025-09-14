@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Организация пространства - Викторина</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-image: url('img/IMG_20250913_160559_655.jpg');
+            background-size: cover;
+            background-position: center;
+            font-family: 'Times New Roman', serif;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px #5D4037;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .title {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .question-block {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .question-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1;
+        }
+        
+        .question-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        
+        .answer-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .answer-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Times New Roman', serif;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .true-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .false-btn {
+            background-color: #F44336;
+            color: white;
+        }
+        
+        .answer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .answer-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .correct-answer {
+            font-size: 16px;
+            display: none;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .correct {
+            background-color: rgba(76, 175, 80, 0.3);
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .incorrect {
+            background-color: rgba(244, 67, 54, 0.3);
+            border-left: 4px solid #F44336;
+        }
+        
+        .score-container {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 20px;
+            padding: 10px;
+            background-color: rgba(93, 64, 55, 0.3);
+            border-radius: 8px;
+        }
+        
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 24px;
+            background-color: #5D4037;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Times New Roman', serif;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            text-shadow: 1px 1px 2px #000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: #4E342E;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">Read the statements and decide if they are TRUE or FALSE according to the information in the text.</div>
+        
+        <div class="question-block" style="background-image: url('img/IMG_20250913_153246_416.jpg');">
+            <div class="question-content">
+                <div class="question-text">1) Assigning homes for all your things can help you stay organized.</div>
+                <div class="answer-buttons">
+                    <button class="answer-btn true-btn" data-question="1" data-answer="true">TRUE</button>
+                    <button class="answer-btn false-btn" data-question="1" data-answer="false">FALSE</button>
+                </div>
+                <div class="correct-answer" id="answer-1">Correct answer: True</div>
+            </div>
+        </div>
+        
+        <div class="question-block" style="background-image: url('img/IMG_20250913_153243_810.jpg');">
+            <div class="question-content">
+                <div class="question-text">2) Grouping smaller items together can make it easier to find them.</div>
+                <div class="answer-buttons">
+                    <button class="answer-btn true-btn" data-question="2" data-answer="true">TRUE</button>
+                    <button class="answer-btn false-btn" data-question="2" data-answer="false">FALSE</button>
+                </div>
+                <div class="correct-answer" id="answer-2">Correct answer: True</div>
+            </div>
+        </div>
+        
+        <div class="question-block" style="background-image: url('img/IMG_20250914_145222_847.jpg');">
+            <div class="question-content">
+                <div class="question-text">3) The article suggests that you should keep all winter accessories in separate boxes.</div>
+                <div class="answer-buttons">
+                    <button class="answer-btn true-btn" data-question="3" data-answer="true">TRUE</button>
+                    <button class="answer-btn false-btn" data-question="3" data-answer="false">FALSE</button>
+                </div>
+                <div class="correct-answer" id="answer-3">Correct answer: False</div>
+            </div>
+        </div>
+        
+        <div class="question-block" style="background-image: url('img/IMG_20250913_153203_018.jpg');">
+            <div class="question-content">
+                <div class="question-text">4) According to the article, putting something back in its place after use is not crucial for reducing clutter.</div>
+                <div class="answer-buttons">
+                    <button class="answer-btn true-btn" data-question="4" data-answer="true">TRUE</button>
+                    <button class="answer-btn false-btn" data-question="4" data-answer="false">FALSE</button>
+                </div>
+                <div class="correct-answer" id="answer-4">Correct answer: False</div>
+            </div>
+        </div>
+        
+        <div class="question-block" style="background-image: url('img/IMG_20250913_153156_917.jpg');">
+            <div class="question-content">
+                <div class="question-text">5) Organizing things by how frequently they are used can make your life easier.</div>
+                <div class="answer-buttons">
+                    <button class="answer-btn true-btn" data-question="5" data-answer="true">TRUE</button>
+                    <button class="answer-btn false-btn" data-question="5" data-answer="false">FALSE</button>
+                </div>
+                <div class="correct-answer" id="answer-5">Correct answer: True</div>
+            </div>
+        </div>
+        
+        <div class="question-block" style="background-image: url('img/IMG_20250913_153232_191.jpg');">
+            <div class="question-content">
+                <div class="question-text">6) The "one in, one out" approach helps in creating a clutter-free life.</div>
+                <div class="answer-buttons">
+                    <button class="answer-btn true-btn" data-question="6" data-answer="true">TRUE</button>
+                    <button class="answer-btn false-btn" data-question="6" data-answer="false">FALSE</button>
+                </div>
+                <div class="correct-answer" id="answer-6">Correct answer: True</div>
+            </div>
+        </div>
+        
+        <div class="question-block" style="background-image: url('img/IMG_20250913_153519_448.jpg');">
+            <div class="question-content">
+                <div class="question-text">7) The article recommends donating items you hardly wear to charity.</div>
+                <div class="answer-buttons">
+                    <button class="answer-btn true-btn" data-question="7" data-answer="true">TRUE</button>
+                    <button class="answer-btn false-btn" data-question="7" data-answer="false">FALSE</button>
+                </div>
+                <div class="correct-answer" id="answer-7">Correct answer: True</div>
+            </div>
+        </div>
+        
+        <div class="score-container">
+            Your score: <span id="score">0</span> out of <span id="total">7</span>
+        </div>
+        
+        <button id="generate-pdf">Generate PDF</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const answerButtons = document.querySelectorAll('.answer-btn');
+            const correctAnswers = {
+                1: 'true',
+                2: 'true',
+                3: 'false',
+                4: 'false',
+                5: 'true',
+                6: 'true',
+                7: 'true'
+            };
+            
+            let score = 0;
+            const totalQuestions = Object.keys(correctAnswers).length;
+            document.getElementById('total').textContent = totalQuestions;
+            
+            answerButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const questionId = this.dataset.question;
+                    const userAnswer = this.dataset.answer;
+                    const isCorrect = userAnswer === correctAnswers[questionId];
+                    
+                    // Disable all buttons for this question
+                    const allButtons = document.querySelectorAll(`.answer-btn[data-question="${questionId}"]`);
+                    allButtons.forEach(btn => {
+                        btn.disabled = true;
+                    });
+                    
+                    // Show correct answer
+                    const answerElement = document.getElementById(`answer-${questionId}`);
+                    answerElement.style.display = 'block';
+                    
+                    // Add appropriate styling
+                    if (isCorrect) {
+                        answerElement.classList.add('correct');
+                        this.style.backgroundColor = '#2E7D32'; // Darker green
+                        score++;
+                    } else {
+                        answerElement.classList.add('incorrect');
+                        this.style.backgroundColor = '#C62828'; // Darker red
+                        
+                        // Highlight the correct answer button
+                        const correctButton = document.querySelector(`.answer-btn[data-question="${questionId}"][data-answer="${correctAnswers[questionId]}"]`);
+                        correctButton.style.backgroundColor = '#2E7D32'; // Darker green
+                    }
+                    
+                    // Update score
+                    document.getElementById('score').textContent = score;
+                });
+            });
+            
+            // PDF generation
+            document.getElementById('generate-pdf').addEventListener('click', function() {
+                // Use html2canvas to convert HTML to image
+                html2canvas(document.querySelector('.container')).then(canvas => {
+                    // Create new jsPDF object
+                    const pdf = new jspdf.jsPDF({
+                        orientation: 'portrait',
+                        unit: 'px',
+                        format: [canvas.width, canvas.height]
+                    });
+                    
+                    // Add image to PDF
+                    pdf.addImage(canvas, 'PNG', 0, 0, canvas.width, canvas.height);
+                    
+                    // Save PDF
+                    pdf.save('Organizing_Tips_Quiz_Results.pdf');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
