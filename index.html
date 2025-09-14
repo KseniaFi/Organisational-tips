@@ -40,8 +40,24 @@
         
         .question {
             margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #8B4513;
+            padding: 20px;
+            border-radius: 10px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .question::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: -1;
+            border-radius: 10px;
         }
         
         .question-text {
@@ -131,56 +147,56 @@
     <div class="container" id="content">
         <h1>Complete each sentence with ONE word from the article.</h1>
         
-        <div class="question" id="q1">
+        <div class="question" id="q1" style="background-image: url('img/IMG_20250914_164225_908.jpg');">
             <div class="question-text">1) The article gives 5 __________ organisational tips to take your spring clean to the next level.</div>
             <input type="text" class="answer-input" id="a1">
             <div class="correct-answer" style="display: none;">Correct answer: game-changing</div>
             <div class="user-answer" style="display: none;"></div>
         </div>
         
-        <div class="question" id="q2">
+        <div class="question" id="q2" style="background-image: url('img/IMG_20250914_164227_410.jpg');">
             <div class="question-text">2) You should __________ homes for all your belongings to make tidying easier.</div>
             <input type="text" class="answer-input" id="a2">
             <div class="correct-answer" style="display: none;">Correct answer: assign</div>
             <div class="user-answer" style="display: none;"></div>
         </div>
         
-        <div class="question" id="q3">
+        <div class="question" id="q3" style="background-image: url('img/IMG_20250914_172831_958.jpg');">
             <div class="question-text">3) It might seem __________ to group smaller things together, but it really helps keep everything organised.</div>
             <input type="text" class="answer-input" id="a3">
             <div class="correct-answer" style="display: none;">Correct answer: obvious</div>
             <div class="user-answer" style="display: none;"></div>
         </div>
         
-        <div class="question" id="q4">
+        <div class="question" id="q4" style="background-image: url('img/IMG_20250914_172840_362.jpg');">
             <div class="question-text">4) Grouping smaller things together can help to avoid losing __________ charging cables.</div>
             <input type="text" class="answer-input" id="a4">
             <div class="correct-answer" style="display: none;">Correct answer: pesky</div>
             <div class="user-answer" style="display: none;"></div>
         </div>
         
-        <div class="question" id="q5">
+        <div class="question" id="q5" style="background-image: url('img/IMG_20250914_172831_502.jpg');">
             <div class="question-text">5) When organising, you should __________ how often you use each item to decide where to put it.</div>
             <input type="text" class="answer-input" id="a5">
             <div class="correct-answer" style="display: none;">Correct answer: consider</div>
             <div class="user-answer" style="display: none;"></div>
         </div>
         
-        <div class="question" id="q6">
+        <div class="question" id="q6" style="background-image: url('img/IMG_20250914_172923_798.jpg');">
             <div class="question-text">6) Returning things after use helps in the fight against household __________.</div>
             <input type="text" class="answer-input" id="a6">
             <div class="correct-answer" style="display: none;">Correct answer: clutter</div>
             <div class="user-answer" style="display: none;"></div>
         </div>
         
-        <div class="question" id="q7">
+        <div class="question" id="q7" style="background-image: url('img/IMG_20250914_172934_245.jpg');">
             <div class="question-text">7) A reliable method to reduce clutter involves making a significant __________ in your shopping habits and enforcing strict limits.</div>
             <input type="text" class="answer-input" id="a7">
             <div class="correct-answer" style="display: none;">Correct answer: uphaul</div>
             <div class="user-answer" style="display: none;"></div>
         </div>
         
-        <div class="question" id="q8">
+        <div class="question" id="q8" style="background-image: url('img/IMG_20250914_172920_881.jpg');">
             <div class="question-text">8) Don't underestimate the __________ of small daily tasks to keep your space tidy.</div>
             <input type="text" class="answer-input" id="a8">
             <div class="correct-answer" style="display: none;">Correct answer: worth</div>
@@ -189,7 +205,7 @@
         
         <div class="buttons">
             <button id="checkAnswers">Check Answers</button>
-            <button id="generatePDF" style="display: none;">Generate PDF</button>
+            <button id="generatePDF">Generate PDF</button>
             <button id="startOver" style="display: none;">Start Over</button>
         </div>
         
@@ -250,7 +266,6 @@
                 // Показываем результат
                 scoreElement.textContent = `You have ${correctCount} correct answers out of 8`;
                 resultSection.style.display = 'block';
-                generateButton.style.display = 'block';
                 startOverButton.style.display = 'block';
                 checkButton.style.display = 'none';
             });
@@ -290,7 +305,6 @@
                 
                 // Скрываем результаты и кнопки
                 resultSection.style.display = 'none';
-                generateButton.style.display = 'none';
                 startOverButton.style.display = 'none';
                 // Показываем кнопку проверки ответов
                 checkButton.style.display = 'block';
