@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete each sentence with ONE word</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            background-image: url('img/IMG_20250913_160559_655.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 0 20px rgba(139, 69, 19, 0.8);
+        }
+        
+        h1 {
+            text-align: center;
+            text-shadow: 3px 3px 5px #8B4513;
+            font-weight: bold;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .question {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #8B4513;
+        }
+        
+        .question-text {
+            font-size: 20px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px #8B4513;
+            font-weight: bold;
+        }
+        
+        .answer-input {
+            width: 200px;
+            padding: 8px 12px;
+            margin-left: 10px;
+            border: 2px solid #8B4513;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 16px;
+        }
+        
+        .result-section {
+            display: none;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 3px solid #8B4513;
+        }
+        
+        .correct-answer {
+            color: #90EE90;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px #006400;
+            margin-top: 8px;
+            font-size: 18px;
+        }
+        
+        .user-answer {
+            color: #FFB6C1;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px #8B0000;
+            margin-top: 8px;
+            font-size: 18px;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 25px;
+            background-color: #8B4513;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            text-shadow: 1px 1px 2px #000;
+        }
+        
+        button:hover {
+            background-color: #A0522D;
+        }
+        
+        .score {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 25px 0;
+            text-shadow: 2px 2px 4px #8B4513;
+        }
+        
+        .restart-message {
+            text-align: center;
+            font-size: 20px;
+            font-style: italic;
+            margin-top: 20px;
+            text-shadow: 2px 2px 4px #8B4513;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="content">
+        <h1>Complete each sentence with ONE word from the article.</h1>
+        
+        <div class="question" id="q1">
+            <div class="question-text">1) The article gives 5 __________ organisational tips to take your spring clean to the next level.</div>
+            <input type="text" class="answer-input" id="a1">
+            <div class="correct-answer" style="display: none;">Correct answer: game-changing</div>
+            <div class="user-answer" style="display: none;"></div>
+        </div>
+        
+        <div class="question" id="q2">
+            <div class="question-text">2) You should __________ homes for all your belongings to make tidying easier.</div>
+            <input type="text" class="answer-input" id="a2">
+            <div class="correct-answer" style="display: none;">Correct answer: assign</div>
+            <div class="user-answer" style="display: none;"></div>
+        </div>
+        
+        <div class="question" id="q3">
+            <div class="question-text">3) It might seem __________ to group smaller things together, but it really helps keep everything organised.</div>
+            <input type="text" class="answer-input" id="a3">
+            <div class="correct-answer" style="display: none;">Correct answer: obvious</div>
+            <div class="user-answer" style="display: none;"></div>
+        </div>
+        
+        <div class="question" id="q4">
+            <div class="question-text">4) Grouping smaller things together can help to avoid losing __________ charging cables.</div>
+            <input type="text" class="answer-input" id="a4">
+            <div class="correct-answer" style="display: none;">Correct answer: pesky</div>
+            <div class="user-answer" style="display: none;"></div>
+        </div>
+        
+        <div class="question" id="q5">
+            <div class="question-text">5) When organising, you should __________ how often you use each item to decide where to put it.</div>
+            <input type="text" class="answer-input" id="a5">
+            <div class="correct-answer" style="display: none;">Correct answer: consider</div>
+            <div class="user-answer" style="display: none;"></div>
+        </div>
+        
+        <div class="question" id="q6">
+            <div class="question-text">6) Returning things after use helps in the fight against household __________.</div>
+            <input type="text" class="answer-input" id="a6">
+            <div class="correct-answer" style="display: none;">Correct answer: clutter</div>
+            <div class="user-answer" style="display: none;"></div>
+        </div>
+        
+        <div class="question" id="q7">
+            <div class="question-text">7) A reliable method to reduce clutter involves making a significant __________ in your shopping habits and enforcing strict limits.</div>
+            <input type="text" class="answer-input" id="a7">
+            <div class="correct-answer" style="display: none;">Correct answer: uphaul</div>
+            <div class="user-answer" style="display: none;"></div>
+        </div>
+        
+        <div class="question" id="q8">
+            <div class="question-text">8) Don't underestimate the __________ of small daily tasks to keep your space tidy.</div>
+            <input type="text" class="answer-input" id="a8">
+            <div class="correct-answer" style="display: none;">Correct answer: worth</div>
+            <div class="user-answer" style="display: none;"></div>
+        </div>
+        
+        <div class="buttons">
+            <button id="checkAnswers">Check Answers</button>
+            <button id="generatePDF" style="display: none;">Generate PDF</button>
+            <button id="startOver" style="display: none;">Start Over</button>
+        </div>
+        
+        <div class="result-section" id="resultSection">
+            <div class="score" id="score"></div>
+            <div class="restart-message">You have completed the exercise. Try again to improve your score!</div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkButton = document.getElementById('checkAnswers');
+            const generateButton = document.getElementById('generatePDF');
+            const startOverButton = document.getElementById('startOver');
+            const resultSection = document.getElementById('resultSection');
+            const scoreElement = document.getElementById('score');
+            
+            // Правильные ответы
+            const correctAnswers = {
+                a1: 'game-changing',
+                a2: 'assign',
+                a3: 'obvious',
+                a4: 'pesky',
+                a5: 'consider',
+                a6: 'clutter',
+                a7: 'uphaul',
+                a8: 'worth'
+            };
+            
+            checkButton.addEventListener('click', function() {
+                let correctCount = 0;
+                
+                // Проверяем каждый ответ
+                for (let i = 1; i <= 8; i++) {
+                    const inputElement = document.getElementById('a' + i);
+                    const userAnswer = inputElement.value.trim().toLowerCase();
+                    const correctAnswer = correctAnswers['a' + i].toLowerCase();
+                    const userAnswerElement = document.querySelector('#q' + i + ' .user-answer');
+                    const correctAnswerElement = document.querySelector('#q' + i + ' .correct-answer');
+                    
+                    // Показываем правильный ответ и ответ пользователя
+                    userAnswerElement.textContent = 'Your answer: ' + (userAnswer || '(not answered)');
+                    userAnswerElement.style.display = 'block';
+                    correctAnswerElement.style.display = 'block';
+                    
+                    // Проверяем, правильный ли ответ
+                    if (userAnswer === correctAnswer) {
+                        correctCount++;
+                        inputElement.style.borderColor = '#90EE90';
+                    } else {
+                        inputElement.style.borderColor = '#FFB6C1';
+                    }
+                    
+                    // Делаем поле ввода только для чтения
+                    inputElement.readOnly = true;
+                }
+                
+                // Показываем результат
+                scoreElement.textContent = `You have ${correctCount} correct answers out of 8`;
+                resultSection.style.display = 'block';
+                generateButton.style.display = 'block';
+                startOverButton.style.display = 'block';
+                checkButton.style.display = 'none';
+            });
+            
+            generateButton.addEventListener('click', function() {
+                // Используем html2canvas и jsPDF для создания PDF
+                html2canvas(document.getElementById('content')).then(canvas => {
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                    const pdf = new jspdf.jsPDF({
+                        orientation: 'portrait',
+                        unit: 'px',
+                        format: [canvas.width, canvas.height]
+                    });
+                    
+                    pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
+                    pdf.save('exercise_results.pdf');
+                });
+            });
+            
+            startOverButton.addEventListener('click', function() {
+                // Сбрасываем все поля и состояния
+                for (let i = 1; i <= 8; i++) {
+                    const inputElement = document.getElementById('a' + i);
+                    const userAnswerElement = document.querySelector('#q' + i + ' .user-answer');
+                    const correctAnswerElement = document.querySelector('#q' + i + ' .correct-answer');
+                    
+                    // Очищаем поле ввода
+                    inputElement.value = '';
+                    // Убираем атрибут только для чтения
+                    inputElement.readOnly = false;
+                    // Сбрасываем цвет границы
+                    inputElement.style.borderColor = '#8B4513';
+                    // Скрываем ответы
+                    userAnswerElement.style.display = 'none';
+                    correctAnswerElement.style.display = 'none';
+                }
+                
+                // Скрываем результаты и кнопки
+                resultSection.style.display = 'none';
+                generateButton.style.display = 'none';
+                startOverButton.style.display = 'none';
+                // Показываем кнопку проверки ответов
+                checkButton.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
