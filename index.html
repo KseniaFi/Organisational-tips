@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulary Matching Game</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(to bottom, #3a2c1f, #1a1208);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            color: #fff;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8), 
+                         -1px -1px 0 #5D4037, 
+                         1px -1px 0 #5D4037, 
+                         -1px 1px 0 #5D4037, 
+                         1px 1px 0 #5D4037;
+            letter-spacing: 1px;
+        }
+        
+        .score-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .score {
+            font-size: 1.4rem;
+            background: rgba(139, 69, 19, 0.3);
+            padding: 12px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+        }
+        
+        .game-area {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .column {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .column h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            font-size: 1.8rem;
+        }
+        
+        .item {
+            padding: 18px;
+            margin: 18px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .word {
+            background: #5D4037; /* Dark terracotta */
+            border-left: 5px solid #8D6E63;
+        }
+        
+        .definition {
+            background: #827717; /* Dark mustard */
+            border-right: 5px solid #AFB42B;
+        }
+        
+        .item-content {
+            z-index: 2;
+            position: relative;
+            font-size: 1.1rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        }
+        
+        .item-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            z-index: 1;
+        }
+        
+        .item.selected {
+            transform: scale(1.03);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+        }
+        
+        .item.correct {
+            background: #2E7D32;
+        }
+        
+        .item.incorrect {
+            background: #C62828;
+        }
+        
+        .item.matched .item-bg {
+            opacity: 0.8;
+        }
+        
+        .item.matched {
+            cursor: default;
+            border-left: 5px solid #4CAF50;
+            border-right: 5px solid #4CAF50;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 25px;
+        }
+        
+        button {
+            background: linear-gradient(to right, #5D4037, #8D6E63);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            font-family: 'Georgia', serif;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        #downloadBtn {
+            background: linear-gradient(to right, #388E3C, #1B5E20);
+        }
+        
+        .completed-message {
+            text-align: center;
+            font-size: 1.8rem;
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(46, 125, 50, 0.3);
+            border-radius: 12px;
+            display: none;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Animation for correct/incorrect answers */
+        @keyframes flash {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .item.correct, .item.incorrect {
+            animation: flash 0.6s ease;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .game-area {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .score {
+                font-size: 1.2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button {
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Vocabulary Matching Game</h1>
+            <div class="score-container">
+                <div class="score">Matches: <span id="matchCount">0</span>/13</div>
+                <div class="score">Score: <span id="score">0</span></div>
+            </div>
+        </header>
+        
+        <div class="game-area">
+            <div class="column">
+                <h2>Words</h2>
+                <div class="item word" data-id="1">
+                    <div class="item-content">tip (noun)</div>
+                    <div class="item-bg" style="background-image: url('img/IMG_20250916_230003_889.jpg');"></div>
+                </div>
+                <div class="item word" data-id="2">
+                    <div class="item-content">game-changing (adjective)</div>
+                    <div class="item-bg" style="background-image: url('img/IMG_20250916_230918_365.jpg');"></div>
+                </div>
+                <div class="item word" data-id="3">
+                    <div class="item-content">assign (verb)</div>
+                    <div class="item-bg" style="background-image: url('img/IMG_20250916_230933_919.jpg');"></div>
+                </div>
+                <div class="item word" data-id="4">
+                    <div class="item-content">obvious (adjective)</div>
+                    <div class="item-bg" style="background-image: url('img/IMG_20250916_230954_692.jpg');"></div>
+                </div>
+                <div class="item word" data-id="5">
+                    <div class="item-content">pesky (adjective)</div>
+                    <div class="item-bg" style="background-image: url('img/IMG_20250916_231034_065.jpg');"></div>
+                </div>
+                <div class="item word" data-id="6">
+                    <div class="item-content">binder (noun)</div>
+                    <div class="item-bg" style="background-image: url('img/IMG_20250916_231055_647.jpg');"></div>
+                </div>
+                <div class="item word" data-id="7">
+                    <div class="item-content">clutter (noun)</div>
+                    <div class="item-bg" style="background-image: url('img/IMG_20250916_232408_087.jpg');"></div>
+                </div>
+                <div class="item word" data-id="8">
+                    <div class="item-content">dreaded (adjective)</div>
+                    <div class="item-bg" style="background-image: url('img/IMG_20250916_231123_591.jpg');"></div>
+                </div>
+                <div class="item word" data-id="9">
+                    <div class="item-content">uphaul (verb)</div>
+                    <div class="item-bg" style="background-image: url('img/IMG_20250916_231154_299.jpg');"></div>
+                </div>
+                <div class="item word" data-id="10">
+                    <div class="item-content">worn-out (adjective)</div>
+                    <div class="item-bg" style="background-image: url('img/IMG_20250916_234530_230.jpg');"></div>
+                </div>
+                <div class="item word" data-id="11">
+                    <div class="item-content">hoover (verb)</div>
+                    <div class="item-bg" style="background-image: url('img/IMG_20250916_232425_697.jpg');"></div>
+                </div>
+                <div class="item word" data-id="12">
+                    <div class="item-content">wipe (verb)</div>
+                    <div class="item-bg" style="background-image: url('img/IMG_20250916_232427_969.jpg');"></div>
+                </div>
+                <div class="item word" data-id="13">
+                    <div class="item-content">recycle (verb)</div>
+                    <div class="item-bg" style="background-image: url('img/IMG_20250916_232430_851.jpg');"></div>
+                </div>
+            </div>
+            
+            <div class="column" id="definitions-column">
+                <h2>Definitions</h2>
+                <!-- Definitions will be inserted here by JavaScript in random order -->
+            </div>
+        </div>
+        
+        <div class="completed-message" id="completedMessage">
+            Congratulations! You've successfully matched all words with their definitions.
+        </div>
+        
+        <div class="controls">
+            <button id="resetBtn">Reset Game</button>
+            <button id="downloadBtn">Download PDF</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize jsPDF
+            const { jsPDF } = window.jspdf;
+            
+            // Game state variables
+            let selectedItem = null;
+            let matchCount = 0;
+            let score = 0;
+            const totalMatches = 13;
+            
+            // DOM elements
+            const matchCountElement = document.getElementById('matchCount');
+            const scoreElement = document.getElementById('score');
+            const completedMessage = document.getElementById('completedMessage');
+            const resetBtn = document.getElementById('resetBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const definitionsColumn = document.getElementById('definitions-column');
+            
+            // Definitions data
+            const definitions = [
+                {
+                    id: 1,
+                    content: "[a piece of practical advice or useful information, intended to help someone solve a problem or achieve a desired outcome.]",
+                    bgImage: "url('img/IMG_20250916_230003_889.jpg')"
+                },
+                {
+                    id: 2,
+                    content: "[describing something that causes a major transformation or breakthrough.]",
+                    bgImage: "url('img/IMG_20250916_230918_365.jpg')"
+                },
+                {
+                    id: 3,
+                    content: "[to allocate or designate something for a specific purpose or use.]",
+                    bgImage: "url('img/IMG_20250916_230933_919.jpg')"
+                },
+                {
+                    id: 4,
+                    content: "[easy to see, recognise, or understand; clear and apparent without any doubt / easily perceived or detected; standing out clearly.]",
+                    bgImage: "url('img/IMG_20250916_230954_692.jpg')"
+                },
+                {
+                    id: 5,
+                    content: "[annoying or troublesome; causing mild irritation.]",
+                    bgImage: "url('img/IMG_20250916_231034_065.jpg')"
+                },
+                {
+                    id: 6,
+                    content: "[a hard cover or folder, often with rings or clasps, used to hold loose sheets of paper together.]",
+                    bgImage: "url('img/IMG_20250916_231055_647.jpg')"
+                },
+                {
+                    id: 7,
+                    content: "[a collection of things lying around in an untidy or disorganised way.]",
+                    bgImage: "url('img/IMG_20250916_232408_087.jpg')"
+                },
+                {
+                    id: 8,
+                    content: "[causing fear or anxiety because it is unpleasant or difficult to deal with.]",
+                    bgImage: "url('img/IMG_20250916_231123_591.jpg')"
+                },
+                {
+                    id: 9,
+                    content: "[to pull or lift something in an upward direction using physical effort or mechanical means.]",
+                    bgImage: "url('img/IMG_20250916_231154_299.jpg')"
+                },
+                {
+                    id: 10,
+                    content: "[very tired or exhausted, especially as a result of hard work or physical exertion; / (of an object) badly damaged or no longer usable because it has been used a lot.]",
+                    bgImage: "url('img/IMG_20250916_234530_230.jpg')"
+                },
+                {
+                    id: 11,
+                    content: "[to clean a floor, carpet, or other surface using a vacuum cleaner.]",
+                    bgImage: "url('img/IMG_20250916_232425_697.jpg')"
+                },
+                {
+                    id: 12,
+                    content: "[to clean something by rubbing its surface with a cloth, towel, hand, or similar object.]",
+                    bgImage: "url('img/IMG_20250916_232427_969.jpg')"
+                },
+                {
+                    id: 13,
+                    content: "[to use something again for a different purpose by processing it to regain materials or make it reusable.]",
+                    bgImage: "url('img/IMG_20250916_232430_851.jpg')"
+                }
+            ];
+            
+            // Function to shuffle array
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+            
+            // Initialize game with randomized definitions
+            function initGame() {
+                // Clear definitions column
+                definitionsColumn.innerHTML = '<h2>Definitions</h2>';
+                
+                // Shuffle definitions
+                const shuffledDefinitions = shuffleArray([...definitions]);
+                
+                // Add shuffled definitions to the column
+                shuffledDefinitions.forEach(def => {
+                    const definitionElement = document.createElement('div');
+                    definitionElement.className = 'item definition';
+                    definitionElement.dataset.id = def.id;
+                    definitionElement.innerHTML = `
+                        <div class="item-content">${def.content}</div>
+                        <div class="item-bg" style="background-image: ${def.bgImage}"></div>
+                    `;
+                    definitionsColumn.appendChild(definitionElement);
+                });
+                
+                // Add event listeners to all items
+                document.querySelectorAll('.item').forEach(item => {
+                    item.addEventListener('click', handleItemClick);
+                });
+            }
+            
+            // Handle item click
+            function handleItemClick() {
+                // Ignore if already matched
+                if (this.classList.contains('matched')) return;
+                
+                // If no item is selected yet, select this one
+                if (!selectedItem) {
+                    selectedItem = this;
+                    this.classList.add('selected');
+                    return;
+                }
+                
+                // If the same item is clicked again, deselect it
+                if (selectedItem === this) {
+                    selectedItem.classList.remove('selected');
+                    selectedItem = null;
+                    return;
+                }
+                
+                // Check if we're trying to match a word with a definition
+                const isWord = selectedItem.classList.contains('word');
+                const isDefinition = this.classList.contains('definition');
+                const isValidPair = (isWord && isDefinition) || (!isWord && isDefinition);
+                
+                if (!isValidPair) {
+                    // Invalid pair type (word-word or definition-definition)
+                    selectedItem.classList.remove('selected');
+                    selectedItem = null;
+                    return;
+                }
+                
+                // Check if the selected items match
+                const selectedId = selectedItem.dataset.id;
+                const currentId = this.dataset.id;
+                
+                if (selectedId === currentId) {
+                    // Correct match
+                    selectedItem.classList.remove('selected');
+                    selectedItem.classList.add('correct');
+                    this.classList.add('correct');
+                    
+                    setTimeout(() => {
+                        selectedItem.classList.remove('correct');
+                        selectedItem.classList.add('matched');
+                        this.classList.remove('correct');
+                        this.classList.add('matched');
+                        
+                        // Show the background images
+                        selectedItem.querySelector('.item-bg').style.opacity = '0.8';
+                        this.querySelector('.item-bg').style.opacity = '0.8';
+                        
+                        // Update match count and score
+                        matchCount++;
+                        score += 10;
+                        matchCountElement.textContent = matchCount;
+                        scoreElement.textContent = score;
+                        
+                        // Check if all matches are found
+                        if (matchCount === totalMatches) {
+                            completedMessage.style.display = 'block';
+                        }
+                        
+                        selectedItem = null;
+                    }, 600);
+                } else {
+                    // Incorrect match
+                    selectedItem.classList.remove('selected');
+                    selectedItem.classList.add('incorrect');
+                    this.classList.add('incorrect');
+                    
+                    setTimeout(() => {
+                        selectedItem.classList.remove('incorrect');
+                        this.classList.remove('incorrect');
+                        selectedItem = null;
+                        
+                        // Deduct points for incorrect match
+                        if (score > 0) {
+                            score -= 2;
+                            scoreElement.textContent = score;
+                        }
+                    }, 800);
+                }
+            }
+            
+            // Initialize the game
+            initGame();
+            
+            // Reset button functionality
+            resetBtn.addEventListener('click', function() {
+                document.querySelectorAll('.item').forEach(item => {
+                    item.classList.remove('selected', 'correct', 'incorrect', 'matched');
+                    item.querySelector('.item-bg').style.opacity = '0';
+                });
+                
+                selectedItem = null;
+                matchCount = 0;
+                score = 0;
+                matchCountElement.textContent = matchCount;
+                scoreElement.textContent = score;
+                completedMessage.style.display = 'none';
+                
+                // Reinitialize with new random order
+                initGame();
+            });
+            
+            // Download PDF button functionality
+            downloadBtn.addEventListener('click', function() {
+                // Create a container for the PDF content
+                const resultContainer = document.createElement('div');
+                resultContainer.style.width = '800px';
+                resultContainer.style.padding = '30px';
+                resultContainer.style.backgroundColor = '#3a2c1f';
+                resultContainer.style.color = 'white';
+                resultContainer.style.fontFamily = 'Georgia, serif';
+                resultContainer.style.fontSize = '14px'; // Smaller font for PDF
+                
+                // Add title
+                const title = document.createElement('h1');
+                title.textContent = 'Vocabulary Matching Game';
+                title.style.textAlign = 'center';
+                title.style.marginBottom = '20px';
+                title.style.fontSize = '24px';
+                title.style.color = 'white';
+                title.style.textShadow = '2px 2px 4px rgba(0, 0, 0, 0.7)';
+                resultContainer.appendChild(title);
+                
+                // Create two columns for words and definitions
+                const columns = document.createElement('div');
+                columns.style.display = 'flex';
+                columns.style.justifyContent = 'space-between';
+                columns.style.gap = '20px';
+                
+                // Words column - compact layout
+                const wordsCol = document.createElement('div');
+                wordsCol.style.width = '48%';
+                wordsCol.innerHTML = '<h3 style="text-align: center; border-bottom: 2px solid rgba(255, 215, 0, 0.3); padding-bottom: 8px; margin-bottom: 15px; font-size: 18px;">Words</h3>';
+                
+                for (let i = 1; i <= totalMatches; i++) {
+                    const wordElem = document.querySelector(`.word[data-id="${i}"]`);
+                    const wordText = wordElem.querySelector('.item-content').textContent;
+                    
+                    const wordDiv = document.createElement('div');
+                    wordDiv.style.marginBottom = '10px';
+                    wordDiv.style.padding = '10px';
+                    wordDiv.style.background = 'rgba(139, 69, 19, 0.3)';
+                    wordDiv.style.borderRadius = '6px';
+                    wordDiv.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+                    wordDiv.textContent = wordText;
+                    wordDiv.style.fontWeight = 'bold';
+                    wordDiv.style.fontSize = '13px';
+                    wordDiv.style.lineHeight = '1.4';
+                    
+                    wordsCol.appendChild(wordDiv);
+                }
+                
+                // Definitions column - compact layout
+                const definitionsCol = document.createElement('div');
+                definitionsCol.style.width = '48%';
+                definitionsCol.innerHTML = '<h3 style="text-align: center; border-bottom: 2px solid rgba(255, 215, 0, 0.3); padding-bottom: 8px; margin-bottom: 15px; font-size: 18px;">Definitions</h3>';
+                
+                // Get all definitions in the order they appear on the page
+                const definitionElements = document.querySelectorAll('.definition');
+                definitionElements.forEach(defElem => {
+                    const defText = defElem.querySelector('.item-content').textContent;
+                    
+                    const defDiv = document.createElement('div');
+                    defDiv.style.marginBottom = '10px';
+                    defDiv.style.padding = '10px';
+                    defDiv.style.background = 'rgba(130, 119, 23, 0.3)';
+                    defDiv.style.borderRadius = '6px';
+                    defDiv.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+                    defDiv.textContent = defText;
+                    defDiv.style.fontSize = '12px';
+                    defDiv.style.lineHeight = '1.4';
+                    
+                    definitionsCol.appendChild(defDiv);
+                });
+                
+                columns.appendChild(wordsCol);
+                columns.appendChild(definitionsCol);
+                resultContainer.appendChild(columns);
+                
+                // Add score information if game is completed
+                if (matchCount === totalMatches) {
+                    const scoreInfo = document.createElement('div');
+                    scoreInfo.innerHTML = `
+                        <div style="text-align: center; margin-top: 25px; background: rgba(46, 125, 50, 0.3); padding: 15px; border-radius: 8px; font-size: 16px;">
+                            <h2 style="font-size: 18px; margin-bottom: 8px;">Final Score: ${score}</h2>
+                            <p style="margin: 0;">You matched all ${totalMatches} word-definition pairs!</p>
+                        </div>
+                    `;
+                    resultContainer.appendChild(scoreInfo);
+                }
+                
+                // Add date and time
+                const dateElem = document.createElement('div');
+                dateElem.textContent = 'Date: ' + new Date().toLocaleDateString();
+                dateElem.style.marginTop = '25px';
+                dateElem.style.textAlign = 'center';
+                dateElem.style.fontStyle = 'italic';
+                dateElem.style.fontSize = '14px';
+                dateElem.style.textShadow = '1px 1px 2px rgba(0, 0, 0, 0.7)';
+                resultContainer.appendChild(dateElem);
+                
+                // Temporarily add the container to the document
+                resultContainer.style.position = 'absolute';
+                resultContainer.style.left = '-9999px';
+                document.body.appendChild(resultContainer);
+                
+                // Create PDF using html2canvas and jsPDF
+                html2canvas(resultContainer, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false
+                }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const imgWidth = 210; // A4 width in mm
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    
+                    // Add image to PDF
+                    pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+                    
+                    // Save the PDF
+                    pdf.save('vocabulary-matching-game.pdf');
+                    
+                    // Remove the temporary container
+                    document.body.removeChild(resultContainer);
+                });
+            });
+        });
+    </script>
+</body>
+  </html>
