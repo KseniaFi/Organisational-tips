@@ -107,10 +107,12 @@
             text-align: center;
             line-height: 1.4;
             padding: 15px;
-            background-color: rgba(89, 35, 0, 0.7); /* Более темная подложка */
+            background-color: rgba(69, 25, 0, 0.8); /* Еще более темная подложка */
             border-radius: 10px;
             backdrop-filter: blur(5px);
             border: 1px solid rgba(139, 69, 19, 0.5);
+            max-height: 70%;
+            overflow-y: auto;
         }
 
         .download-btn {
@@ -174,15 +176,16 @@
 
         /* Стили для PDF экспорта */
         .pdf-card {
-            width: 210mm; /* Ширина A4 */
-            height: 297mm; /* Высота A4 */
+            width: 210mm;
+            height: 297mm;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 30px;
+            padding: 20mm;
             box-sizing: border-box;
             break-after: page;
+            position: relative;
         }
         
         .pdf-content {
@@ -195,34 +198,38 @@
             background-size: cover;
             background-position: center;
             border-radius: 15px;
-            padding: 40px;
+            padding: 20px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
         }
         
         .pdf-word {
-            font-size: 36px;
+            font-size: 32px;
             font-weight: bold;
             color: white;
             text-shadow: 3px 3px 5px #8B4513, -1px -1px 0 #8B4513, 1px -1px 0 #8B4513, -1px 1px 0 #8B4513, 1px 1px 0 #8B4513;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             text-align: center;
-            background-color: rgba(89, 35, 0, 0.7);
+            background-color: rgba(69, 25, 0, 0.8);
             padding: 15px;
             border-radius: 10px;
             backdrop-filter: blur(5px);
             border: 1px solid rgba(139, 69, 19, 0.5);
+            max-width: 90%;
         }
         
         .pdf-meaning {
-            font-size: 24px;
+            font-size: 22px;
             color: white;
             text-shadow: 2px 2px 4px #8B4513, -1px -1px 0 #8B4513, 1px -1px 0 #8B4513, -1px 1px 0 #8B4513, 1px 1px 0 #8B4513;
             text-align: center;
             line-height: 1.5;
-            padding: 25px;
-            background-color: rgba(89, 35, 0, 0.7); /* Более темная подложка */
+            padding: 20px;
+            background-color: rgba(69, 25, 0, 0.8);
             border-radius: 10px;
             max-width: 90%;
+            max-height: 60%;
+            overflow: hidden;
             backdrop-filter: blur(5px);
             border: 1px solid rgba(139, 69, 19, 0.5);
         }
@@ -343,6 +350,7 @@
 
             const container = document.getElementById('flashcards-container');
             const loadingElement = document.getElementById('loading');
+            const downloadBtn = document.getElementById('download-btn');
             
             // Create flashcards
             flashcards.forEach(card => {
@@ -371,50 +379,56 @@
             });
 
             // Add PDF download functionality
-            document.getElementById('download-btn').addEventListener('click', async function() {
+            downloadBtn.addEventListener('click', async function() {
                 // Show loading indicator
                 loadingElement.style.display = 'flex';
+                downloadBtn.disabled = true;
                 
-                // Use html2canvas and jsPDF
-                const { jsPDF } = window.jspdf;
-                
-                // Create a temporary container for PDF export
-                const pdfContainer = document.createElement('div');
-                pdfContainer.style.position = 'absolute';
-                pdfContainer.style.left = '-9999px';
-                pdfContainer.style.top = '0';
-                pdfContainer.style.width = '210mm';
-                document.body.appendChild(pdfContainer);
-                
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const pageWidth = pdf.internal.pageSize.getWidth();
-                const pageHeight = pdf.internal.pageSize.getHeight();
-                
-                // Process each card individually
-                for (let i = 0; i < flashcards.length; i++) {
-                    const card = flashcards[i];
+                try {
+                    // Use html2canvas and jsPDF
+                    const { jsPDF } = window.jspdf;
                     
-                    // Create PDF version of the card
-                    const cardElement = document.createElement('div');
-                    cardElement.className = 'pdf-card';
-                    cardElement.innerHTML = `
-                        <div class="pdf-content" style="background-image: url('${card.background}')">
-                            <div class="pdf-word">${card.word}</div>
-                            <div class="pdf-meaning">${card.meaning}</div>
-                        </div>
-                    `;
+                    // Create a temporary container for PDF export
+                    const pdfContainer = document.createElement('div');
+                    pdfContainer.style.position = 'absolute';
+                    pdfContainer.style.left = '-9999px';
+                    pdfContainer.style.top = '0';
+                    pdfContainer.style.width = '210mm';
+                    document.body.appendChild(pdfContainer);
                     
-                    pdfContainer.appendChild(cardElement);
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const pageWidth = pdf.internal.pageSize.getWidth();
+                    const pageHeight = pdf.internal.pageSize.getHeight();
                     
-                    try {
-                        // Render card to canvas
+                    // Process each card individually
+                    for (let i = 0; i < flashcards.length; i++) {
+                        const card = flashcards[i];
+                        
+                        // Create PDF version of the card
+                        const cardElement = document.createElement('div');
+                        cardElement.className = 'pdf-card';
+                        cardElement.innerHTML = `
+                            <div class="pdf-content" style="background-image: url('${card.background}')">
+                                <div class="pdf-word">${card.word}</div>
+                                <div class="pdf-meaning">${card.meaning}</div>
+                            </div>
+                        `;
+                        
+                        pdfContainer.appendChild(cardElement);
+                        
+                        // Give the browser a moment to render
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                        
+                        // Render card to canvas with higher quality
                         const canvas = await html2canvas(cardElement, {
-                            scale: 2,
+                            scale: 3, // Higher scale for better quality
                             useCORS: true,
                             logging: false,
                             backgroundColor: null,
-                            width: 210, // mm
-                            height: 297 // mm
+                            width: cardElement.offsetWidth,
+                            height: cardElement.offsetHeight,
+                            windowWidth: cardElement.scrollWidth,
+                            windowHeight: cardElement.scrollHeight
                         });
                         
                         const imgData = canvas.toDataURL('image/jpeg', 0.95);
@@ -423,27 +437,33 @@
                             pdf.addPage();
                         }
                         
-                        // Add image to PDF (full page)
-                        pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
+                        // Calculate dimensions to fit the page
+                        const imgWidth = pageWidth;
+                        const imgHeight = (canvas.height * pageWidth) / canvas.width;
                         
-                    } catch (error) {
-                        console.error('Error generating PDF:', error);
-                    } finally {
+                        // Add image to PDF (full page)
+                        pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+                        
                         // Remove the card from temporary container
                         pdfContainer.removeChild(cardElement);
                     }
+                    
+                    // Clean up
+                    document.body.removeChild(pdfContainer);
+                    
+                    // Save the PDF
+                    pdf.save('vocabulary-flashcards.pdf');
+                    
+                } catch (error) {
+                    console.error('Error generating PDF:', error);
+                    alert('Error generating PDF. Please try again.');
+                } finally {
+                    // Hide loading indicator
+                    loadingElement.style.display = 'none';
+                    downloadBtn.disabled = false;
                 }
-                
-                // Clean up
-                document.body.removeChild(pdfContainer);
-                
-                // Hide loading indicator
-                loadingElement.style.display = 'none';
-                
-                // Save the PDF
-                pdf.save('vocabulary-flashcards.pdf');
             });
         });
     </script>
 </body>
-</html>
+</html>  
