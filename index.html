@@ -106,9 +106,11 @@
             text-shadow: 2px 2px 4px #8B4513, -1px -1px 0 #8B4513, 1px -1px 0 #8B4513, -1px 1px 0 #8B4513, 1px 1px 0 #8B4513;
             text-align: center;
             line-height: 1.4;
-            padding: 10px;
-            background-color: rgba(139, 69, 19, 0.4);
+            padding: 15px;
+            background-color: rgba(89, 35, 0, 0.7); /* Более темная подложка */
             border-radius: 10px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(139, 69, 19, 0.5);
         }
 
         .download-btn {
@@ -204,6 +206,11 @@
             text-shadow: 3px 3px 5px #8B4513, -1px -1px 0 #8B4513, 1px -1px 0 #8B4513, -1px 1px 0 #8B4513, 1px 1px 0 #8B4513;
             margin-bottom: 30px;
             text-align: center;
+            background-color: rgba(89, 35, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(139, 69, 19, 0.5);
         }
         
         .pdf-meaning {
@@ -212,10 +219,43 @@
             text-shadow: 2px 2px 4px #8B4513, -1px -1px 0 #8B4513, 1px -1px 0 #8B4513, -1px 1px 0 #8B4513, 1px 1px 0 #8B4513;
             text-align: center;
             line-height: 1.5;
-            padding: 20px;
-            background-color: rgba(139, 69, 19, 0.4);
+            padding: 25px;
+            background-color: rgba(89, 35, 0, 0.7); /* Более темная подложка */
             border-radius: 10px;
             max-width: 90%;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(139, 69, 19, 0.5);
+        }
+        
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: white;
+            font-size: 24px;
+            flex-direction: column;
+        }
+        
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #8B4513;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -225,6 +265,11 @@
     </div>
     
     <button class="download-btn" id="download-btn">Download as PDF</button>
+
+    <div class="loading" id="loading" style="display: none;">
+        <div class="spinner"></div>
+        <div>Generating PDF, please wait...</div>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -297,6 +342,7 @@
             ];
 
             const container = document.getElementById('flashcards-container');
+            const loadingElement = document.getElementById('loading');
             
             // Create flashcards
             flashcards.forEach(card => {
@@ -326,6 +372,9 @@
 
             // Add PDF download functionality
             document.getElementById('download-btn').addEventListener('click', async function() {
+                // Show loading indicator
+                loadingElement.style.display = 'flex';
+                
                 // Use html2canvas and jsPDF
                 const { jsPDF } = window.jspdf;
                 
@@ -357,15 +406,17 @@
                     
                     pdfContainer.appendChild(cardElement);
                     
-                    // Render card to canvas
-                    await html2canvas(cardElement, {
-                        scale: 2,
-                        useCORS: true,
-                        logging: false,
-                        backgroundColor: null,
-                        width: 210, // mm
-                        height: 297 // mm
-                    }).then(canvas => {
+                    try {
+                        // Render card to canvas
+                        const canvas = await html2canvas(cardElement, {
+                            scale: 2,
+                            useCORS: true,
+                            logging: false,
+                            backgroundColor: null,
+                            width: 210, // mm
+                            height: 297 // mm
+                        });
+                        
                         const imgData = canvas.toDataURL('image/jpeg', 0.95);
                         
                         if (i > 0) {
@@ -375,13 +426,19 @@
                         // Add image to PDF (full page)
                         pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
                         
+                    } catch (error) {
+                        console.error('Error generating PDF:', error);
+                    } finally {
                         // Remove the card from temporary container
                         pdfContainer.removeChild(cardElement);
-                    });
+                    }
                 }
                 
                 // Clean up
                 document.body.removeChild(pdfContainer);
+                
+                // Hide loading indicator
+                loadingElement.style.display = 'none';
                 
                 // Save the PDF
                 pdf.save('vocabulary-flashcards.pdf');
