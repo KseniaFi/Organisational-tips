@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulary Flashcards</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background-image: url('img/IMG_20250913_160559_655.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            width: 100%;
+            max-width: 1200px;
+            margin-bottom: 30px;
+        }
+
+        .flashcard {
+            height: 380px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+            border-radius: 15px;
+            box-shadow: 0 15px 25px rgba(139, 69, 19, 0.7);
+        }
+
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+            border-radius: 15px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .flashcard-front {
+            background-color: #f5f5f5;
+        }
+
+        .flashcard-back {
+            background-color: #f5f5f5;
+            transform: rotateY(180deg);
+        }
+
+        .question-mark {
+            font-size: 80px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 3px 3px 5px #8B4513, 0 0 10px #8B4513;
+            animation: pulse 2s infinite;
+            margin-bottom: 20px;
+        }
+
+        .definition, .word {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 3px 3px 5px #8B4513, -1px -1px 0 #8B4513, 1px -1px 0 #8B4513, -1px 1px 0 #8B4513, 1px 1px 0 #8B4513;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .meaning {
+            font-size: 18px;
+            color: white;
+            text-shadow: 2px 2px 4px #8B4513, -1px -1px 0 #8B4513, 1px -1px 0 #8B4513, -1px 1px 0 #8B4513, 1px 1px 0 #8B4513;
+            text-align: center;
+            line-height: 1.4;
+            padding: 10px;
+            background-color: rgba(139, 69, 19, 0.4);
+            border-radius: 10px;
+        }
+
+        .download-btn {
+            background: linear-gradient(to bottom, #8B4513, #6B3100);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(to bottom, #9C5D2D, #7C4120);
+        }
+
+        .download-btn:active {
+            transform: translateY(1px);
+        }
+
+        @keyframes pulse {
+            0% {
+                text-shadow: 3px 3px 5px #8B4513, 0 0 10px #8B4513;
+            }
+            50% {
+                text-shadow: 3px 3px 10px #8B4513, 0 0 20px #8B4513;
+            }
+            100% {
+                text-shadow: 3px 3px 5px #8B4513, 0 0 10px #8B4513;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .flashcard {
+                height: 350px;
+            }
+            
+            .question-mark {
+                font-size: 60px;
+            }
+            
+            .definition, .word {
+                font-size: 20px;
+            }
+            
+            .meaning {
+                font-size: 16px;
+            }
+        }
+
+        /* Стили для PDF экспорта */
+        .pdf-card {
+            width: 210mm; /* Ширина A4 */
+            height: 297mm; /* Высота A4 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            box-sizing: border-box;
+            break-after: page;
+        }
+        
+        .pdf-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-size: cover;
+            background-position: center;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .pdf-word {
+            font-size: 36px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 3px 3px 5px #8B4513, -1px -1px 0 #8B4513, 1px -1px 0 #8B4513, -1px 1px 0 #8B4513, 1px 1px 0 #8B4513;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .pdf-meaning {
+            font-size: 24px;
+            color: white;
+            text-shadow: 2px 2px 4px #8B4513, -1px -1px 0 #8B4513, 1px -1px 0 #8B4513, -1px 1px 0 #8B4513, 1px 1px 0 #8B4513;
+            text-align: center;
+            line-height: 1.5;
+            padding: 20px;
+            background-color: rgba(139, 69, 19, 0.4);
+            border-radius: 10px;
+            max-width: 90%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="flashcards-container">
+        <!-- Flashcards will be generated by JavaScript -->
+    </div>
+    
+    <button class="download-btn" id="download-btn">Download as PDF</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashcards = [
+                {
+                    word: "tip (noun)",
+                    meaning: "a piece of practical advice or useful information, intended to help someone solve a problem or achieve a desired outcome.",
+                    background: "img/IMG_20250916_230003_889.jpg"
+                },
+                {
+                    word: "game-changing (adjective)",
+                    meaning: "describing something that causes a major transformation or breakthrough.",
+                    background: "img/IMG_20250916_230918_365.jpg"
+                },
+                {
+                    word: "assign (verb)",
+                    meaning: "to allocate or designate something for a specific purpose or use.",
+                    background: "img/IMG_20250916_230933_919.jpg"
+                },
+                {
+                    word: "obvious (adjective)",
+                    meaning: "easy to see, recognise, or understand; clear and apparent without any doubt / easily perceived or detected; standing out clearly.",
+                    background: "img/IMG_20250916_230954_692.jpg"
+                },
+                {
+                    word: "pesky (adjective)",
+                    meaning: "annoying or troublesome; causing mild irritation.",
+                    background: "img/IMG_20250916_231034_065.jpg"
+                },
+                {
+                    word: "binder (noun)",
+                    meaning: "a hard cover or folder, often with rings or clasps, used to hold loose sheets of paper together.",
+                    background: "img/IMG_20250916_231055_647.jpg"
+                },
+                {
+                    word: "clutter (noun)",
+                    meaning: "a collection of things lying around in an untidy or disorganised way.",
+                    background: "img/IMG_20250916_232408_087.jpg"
+                },
+                {
+                    word: "dreaded (adjective)",
+                    meaning: "causing fear or anxiety because it is unpleasant or difficult to deal with.",
+                    background: "img/IMG_20250916_231123_591.jpg"
+                },
+                {
+                    word: "uphaul (verb)",
+                    meaning: "to pull or lift something in an upward direction using physical effort or mechanical means.",
+                    background: "img/IMG_20250916_231154_299.jpg"
+                },
+                {
+                    word: "worn-out (adjective)",
+                    meaning: "very tired or exhausted, especially as a result of hard work or physical exertion; / (of an object) badly damaged or no longer usable because it has been used a lot.",
+                    background: "img/IMG_20250916_234530_230.jpg"
+                },
+                {
+                    word: "hoover (verb)",
+                    meaning: "to clean a floor, carpet, or other surface using a vacuum cleaner.",
+                    background: "img/IMG_20250916_232425_697.jpg"
+                },
+                {
+                    word: "wipe (verb)",
+                    meaning: "to clean something by rubbing its surface with a cloth, towel, hand, or similar object.",
+                    background: "img/IMG_20250916_232427_969.jpg"
+                },
+                {
+                    word: "recycle (verb)",
+                    meaning: "to use something again for a different purpose by processing it to regain materials or make it reusable.",
+                    background: "img/IMG_20250916_232430_851.jpg"
+                }
+            ];
+
+            const container = document.getElementById('flashcards-container');
+            
+            // Create flashcards
+            flashcards.forEach(card => {
+                const flashcard = document.createElement('div');
+                flashcard.className = 'flashcard';
+                
+                flashcard.innerHTML = `
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front" style="background-image: url('${card.background}')">
+                            <div class="question-mark">?</div>
+                            <div class="meaning">${card.meaning}</div>
+                        </div>
+                        <div class="flashcard-back" style="background-image: url('${card.background}')">
+                            <div class="word">${card.word}</div>
+                            <div class="meaning">${card.meaning}</div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add click event to flip card
+                flashcard.addEventListener('click', function() {
+                    this.classList.toggle('flipped');
+                });
+                
+                container.appendChild(flashcard);
+            });
+
+            // Add PDF download functionality
+            document.getElementById('download-btn').addEventListener('click', async function() {
+                // Use html2canvas and jsPDF
+                const { jsPDF } = window.jspdf;
+                
+                // Create a temporary container for PDF export
+                const pdfContainer = document.createElement('div');
+                pdfContainer.style.position = 'absolute';
+                pdfContainer.style.left = '-9999px';
+                pdfContainer.style.top = '0';
+                pdfContainer.style.width = '210mm';
+                document.body.appendChild(pdfContainer);
+                
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
+                
+                // Process each card individually
+                for (let i = 0; i < flashcards.length; i++) {
+                    const card = flashcards[i];
+                    
+                    // Create PDF version of the card
+                    const cardElement = document.createElement('div');
+                    cardElement.className = 'pdf-card';
+                    cardElement.innerHTML = `
+                        <div class="pdf-content" style="background-image: url('${card.background}')">
+                            <div class="pdf-word">${card.word}</div>
+                            <div class="pdf-meaning">${card.meaning}</div>
+                        </div>
+                    `;
+                    
+                    pdfContainer.appendChild(cardElement);
+                    
+                    // Render card to canvas
+                    await html2canvas(cardElement, {
+                        scale: 2,
+                        useCORS: true,
+                        logging: false,
+                        backgroundColor: null,
+                        width: 210, // mm
+                        height: 297 // mm
+                    }).then(canvas => {
+                        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                        
+                        if (i > 0) {
+                            pdf.addPage();
+                        }
+                        
+                        // Add image to PDF (full page)
+                        pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
+                        
+                        // Remove the card from temporary container
+                        pdfContainer.removeChild(cardElement);
+                    });
+                }
+                
+                // Clean up
+                document.body.removeChild(pdfContainer);
+                
+                // Save the PDF
+                pdf.save('vocabulary-flashcards.pdf');
+            });
+        });
+    </script>
+</body>
+</html>
