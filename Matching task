@@ -298,22 +298,18 @@
                     <div class="item-bg" style="background-image: url('img/IMG_20250916_231123_591.jpg');"></div>
                 </div>
                 <div class="item word" data-id="9">
-                    <div class="item-content">uphaul (verb)</div>
-                    <div class="item-bg" style="background-image: url('img/IMG_20250916_231154_299.jpg');"></div>
-                </div>
-                <div class="item word" data-id="10">
                     <div class="item-content">worn-out (adjective)</div>
                     <div class="item-bg" style="background-image: url('img/IMG_20250916_234530_230.jpg');"></div>
                 </div>
-                <div class="item word" data-id="11">
+                <div class="item word" data-id="10">
                     <div class="item-content">hoover (verb)</div>
                     <div class="item-bg" style="background-image: url('img/IMG_20250916_232425_697.jpg');"></div>
                 </div>
-                <div class="item word" data-id="12">
+                <div class="item word" data-id="11">
                     <div class="item-content">wipe (verb)</div>
                     <div class="item-bg" style="background-image: url('img/IMG_20250916_232427_969.jpg');"></div>
                 </div>
-                <div class="item word" data-id="13">
+                <div class="item word" data-id="12">
                     <div class="item-content">recycle (verb)</div>
                     <div class="item-bg" style="background-image: url('img/IMG_20250916_232430_851.jpg');"></div>
                 </div>
@@ -398,26 +394,21 @@
                 },
                 {
                     id: 9,
-                    content: "[to pull or lift something in an upward direction using physical effort or mechanical means.]",
-                    bgImage: "url('img/IMG_20250916_231154_299.jpg')"
-                },
-                {
-                    id: 10,
                     content: "[very tired or exhausted, especially as a result of hard work or physical exertion; / (of an object) badly damaged or no longer usable because it has been used a lot.]",
                     bgImage: "url('img/IMG_20250916_234530_230.jpg')"
                 },
                 {
-                    id: 11,
+                    id: 10,
                     content: "[to clean a floor, carpet, or other surface using a vacuum cleaner.]",
                     bgImage: "url('img/IMG_20250916_232425_697.jpg')"
                 },
                 {
-                    id: 12,
+                    id: 11,
                     content: "[to clean something by rubbing its surface with a cloth, towel, hand, or similar object.]",
                     bgImage: "url('img/IMG_20250916_232427_969.jpg')"
                 },
                 {
-                    id: 13,
+                    id: 12,
                     content: "[to use something again for a different purpose by processing it to regain materials or make it reusable.]",
                     bgImage: "url('img/IMG_20250916_232430_851.jpg')"
                 }
