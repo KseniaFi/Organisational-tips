@@ -173,7 +173,7 @@
         
         <div class="question-block" style="background-image: url('img/IMG_20250913_153246_416.jpg');">
             <div class="question-content">
-                <div class="question-text">1) Assigning homes for all your things can help you stay organized.</div>
+                <div class="question-text">1) Assigning homes for all your things can help you stay organised.</div>
                 <div class="answer-buttons">
                     <button class="answer-btn true-btn" data-question="1" data-answer="true">TRUE</button>
                     <button class="answer-btn false-btn" data-question="1" data-answer="false">FALSE</button>
